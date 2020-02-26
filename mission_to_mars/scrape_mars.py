@@ -9,15 +9,7 @@ def scrape():
     executable_path = {'executable_path': '/usr/local/bin/chromedriver'}
     browser = Browser('chrome', **executable_path, headless=False)
     
-#keys and dictionary setup
-    mars_dict = []
-    mars_values = []
-    mars_dict_keys = ['News', 'Featured Image', 'Weather', 'Table', 'Hemisphere Images']
-    
 #mars news
-    news_keys = ['News Title', 'News Caption']
-    news_values = []
-    news = []
     url = 'https://mars.nasa.gov/news/'
     browser.visit(url)
     html = browser.html
@@ -28,15 +20,8 @@ def scrape():
 
     news_p = soup.find('div', class_='article_teaser_body').text
     news_p.strip
-
-    news_values.append(news_title)
-    news_values.append(news_p)
-    news.append(dict(zip(news_keys, news_values)))
     
 #mars main image
-    main_img = []
-    main_img_keys = ["Main Image"]
-    main_img_values = []
     url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
     browser.visit(url)
     html = browser.html
@@ -45,33 +30,19 @@ def scrape():
     image = soup.find_all('a', class_='fancybox')[0]["data-fancybox-href"]
     site_root = "https://www.jpl.nasa.gov"
     featured_image_url = site_root + image
-    main_img_values.append(featured_image_url)
-    main_img.append(dict(zip(main_img_keys, main_img_values)))
     
-#mars weather
-    weather_keys = ['Current Weather']
-    weather_values = []
-    current_weather = []
-    
+#mars weather  
     url = 'https://twitter.com/MarsWxReport'
     response = requests.get(url)
     soup = bs(response.text, 'lxml')
 
     mars_weather = soup.find('p', class_="TweetTextSize").text
-    weather_values.append(mars_weather)
-    current_weather.append(dict(zip(weather_keys, weather_values)))
     
 #mars table
-    mars_table_keys = ['Table HTML']
-    table_html = []
-    table_value = []
-    
     url = 'https://space-facts.com/mars/'
     tables = pd.read_html(url)
     df = tables[0]
     html_table = df.to_html()
-    table_value.append(html_table)
-    table_html.append(dict(zip(mars_table_keys, table_value)))
     
 #hemispheres 
     itteration = ['Cerberus Hemisphere Enhanced', 'Schiaparelli Hemisphere Enhanced', 'Syrtis Major Hemisphere Enhanced', 'Valles Marineris Hemisphere Enhanced']
@@ -99,10 +70,14 @@ def scrape():
         values.append(img_url)
         hemisphere_image_urls.append(dict(zip(keys, values)))
         values = []
-    mars_values.append(news)
-    mars_values.append(main_img)
-    mars_values.append(current_weather)
-    mars_values.append(table_html)
-    mars_values.append(hemisphere_image_urls)
-    mars_dict.append(dict(zip(mars_dict_keys, mars_values)))
-    print(mars_dict)
+    
+    mars_dict = {
+        "news_title": news_title,
+        "news_caption": news_p,
+        "main_image": featured_image_url,
+        "current_weather": mars_weather,
+        "table_html": html_table,
+        "hemisphere": hemisphere_image_urls
+    }
+    browser.quit()
+    return mars_dict

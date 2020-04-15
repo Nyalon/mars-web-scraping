@@ -1,1 +1,2 @@
-# web-scraping-challenge
+# Overview: Scrapes data from various sites, and creates a dashboard utilizing Python, Beautiful Soup, and Splinter
+# tophalf.png - Showcases the finished site. Program can be run locally by cloneing the repository, and running a python server. 
